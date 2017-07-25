@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+     <meta charset="utf-8"/>
+     <title>Tutorial</title>
+
+     <script type="text/javascript" src="phaser.min.js"></script>
+     <script type="text/javascript" src="Boot.js"></script>
+     <script type="text/javascript" src="Preloader.js"></script>
+     <script type="text/javascript" src="MainMenu.js"></script>
+     <script type="text/javascript" src="Level1.js"></script>
+     <style type="text/css">
+
+     canvas {
+         image-rendering: -moz-crisp-edges;
+         image-rendering: -webkit-crisp-edges;
+         image-rendering: pixelated;
+     }
+     </style>
+     <body>
+          <script type="text/javascript">
+               window.onload = function(){
+                    var gameWidth = 240;
+                    var gameHeight = 176;
+                    var game = new Phaser.Game(gameWidth,gameHeight,Phaser.AUTO,'');
+
+                    game.state.add('Boot', Game.Boot);
+                    game.state.add('Preloader', Game.Preloader);
+                    game.state.add('MainMenu', Game.MainMenu);
+                    game.state.add('Level1', Game.Level1);
+
+                    game.state.start('Boot');
+
+               }
+          </script>
+     </body>
+
+
+</html>
