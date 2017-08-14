@@ -10,6 +10,7 @@ var grEnemy;
 var grBullet;
 var grItem;
 var nextShot;
+var player;
 
 Game.Level1.prototype = {
      create : function(){
@@ -21,24 +22,12 @@ Game.Level1.prototype = {
          grEnemy = this.add.group();
          grBullet = this.add.group();
          grItem = this.add.group();
-
-         player = this.add.sprite(150,300,'atlas','player-idle-1');
-         player.anchor.setTo(0.5,0.5);
-         player.isDucking = false;
-         player.maxHealth = 100;
-         player.health = 100;
-
-         player.animations.add('idle',Phaser.Animation.generateFrameNames('player-idle-',1,4),5,true);
-         player.animations.add('jump',Phaser.Animation.generateFrameNames('player-jump-',1,6),10,true);
-         player.animations.add('run',Phaser.Animation.generateFrameNames('player-run-',1,10),7,true);
-         player.animations.add('duck',['player-duck'],10,true);
-
-         this.physics.arcade.enable(player);
-         player.body.setSize(11, 40, 35, 24);
+         player = new Player(this.game,0,0);
+         player.x = 150;
+         player.y = 300;
 
          this.camera.follow(player);
-         player.body.collideWorldBounds = true;
-         player.body.gravity.y = 500;
+
          new Enemy.crab(this.game,15,19);
 
          var gui = this.add.bitmapText(5,0,'font','life : ' + player.health,12);
@@ -55,57 +44,6 @@ Game.Level1.prototype = {
          this.physics.arcade.collide(grItem, this.layer3);
 
          this.physics.arcade.overlap(grBullet,grEnemy,this.hitEnnemy,null,this);
-
-         player.body.velocity.x = 0;
-
-         if(controls.right.isDown && !player.isDucking){
-            if(player.body.onFloor()){
-            player.animations.play('run');
-            }
-            player.animation = "run";
-            player.scale.setTo(1,1);
-            player.body.velocity.x += playerSpeed;
-       }else if(controls.right.isDown && player.isDucking){
-            player.scale.setTo(1,1);
-       }
-
-         if(controls.left.isDown && !player.isDucking){
-            if(player.body.onFloor()){
-            player.animations.play('run');
-            }
-            player.animation = "run";
-            player.scale.setTo(-1,1);
-            player.body.velocity.x -= playerSpeed;
-       }else if(controls.left.isDown && player.isDucking){
-            player.scale.setTo(-1,1);
-       }
-
-         if(controls.up.isDown && (player.body.onFloor() || player.body.touching.down) &&
-           this.time.now > jumpTimer){
-             player.animation = "jump";
-             player.animations.play('jump');
-             player.body.velocity.y = -250;
-             jumpTimer = this.time.now + 750;
-         }
-
-         if(controls.shoot.isDown){
-              if(nextShot > this.time.now){
-                   return;
-              }
-              nextShot = this.time.now +200;
-              var shot = new shoot.create(this.game,player.x,player.y,player.scale.x);
-         }
-
-         if(player.body.velocity.x == 0  && player.body.velocity.y ==0){
-             player.animations.play('idle');
-         }
-
-         if(controls.down.isDown){
-              player.animations.play('duck');
-              player.isDucking = true;
-         }else{
-              player.isDucking = false;
-         }
 
      },
      render: function(){

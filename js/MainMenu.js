@@ -1,7 +1,6 @@
 var control={};
 var background;
 var middleground;
-var player;
 Game.MainMenu = function(game){
      this.game = game;
      this.var={};
@@ -21,17 +20,18 @@ Game.MainMenu.prototype = {
 
 
           controls = {
-              right : this.input.keyboard.addKey(Phaser.Keyboard.D),
-              left  : this.input.keyboard.addKey(Phaser.Keyboard.Q),
-              up    : this.input.keyboard.addKey(Phaser.Keyboard.Z),
-              down    : this.input.keyboard.addKey(Phaser.Keyboard.S),
-              shoot    : this.input.keyboard.addKey(Phaser.Keyboard.X),
-              spacebar : this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+              right : this.input.keyboard.addKey(Phaser.Keyboard.RIGHT),
+              left  : this.input.keyboard.addKey(Phaser.Keyboard.LEFT),
+              up    : this.input.keyboard.addKey(Phaser.Keyboard.UP),
+              down    : this.input.keyboard.addKey(Phaser.Keyboard.DOWN),
+              shoot    : this.input.keyboard.addKey(Phaser.Keyboard.D),
+              enter    : this.input.keyboard.addKey(Phaser.Keyboard.ENTER),
+              z : this.input.keyboard.addKey(Phaser.Keyboard.Z)
          }
 
          this.time.events.loop(700, this.blinkText, this);
 
-         controls.spacebar.onDown.add(this.gameStart,this);
+         controls.enter.onDown.add(this.gameStart,this);
          this.var.state = 1
      },
      update : function(){
@@ -53,7 +53,6 @@ Game.MainMenu.prototype = {
              this.instruction = this.add.image(this.world.centerX,80,'instructions');
              this.instruction.anchor.setTo(.5);
         }else{
-          //  player = new Player.create(this.game,0,0);
            this.state.start('Level1');
         }
    }
