@@ -10,7 +10,7 @@ Game.Boot.prototype={
           this.stage.disableVisibility = true;
      },
      preload:function(){
-          this.load.image('preloaderBar','assets/preloader.png');
+          this.load.image('preloaderBar','assets/sprites/loading.png');
      },
      create:function(){
           this.scale.pageAlignHorizontally = true;
