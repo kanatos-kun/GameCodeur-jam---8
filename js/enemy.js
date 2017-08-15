@@ -5,6 +5,14 @@ var Enemy = {
           var anim = this.animations.add('death', Phaser.Animation.generateFrameNames('enemy-death-', 1, 5, '', 0), 18, false);
           this.animations.play('death');
           anim.onComplete.add(function () {
+               console.log(this.game);
+              let rndObject = this.game.rnd.pick([1,2,3]);
+
+              for(let i=0;i<rndObject;i++){
+                   let rndX = this.game.rnd.timestamp(-10,10);
+                   let rndY = this.game.rnd.timestamp(-10,10);
+                   new item.orb(this.game,this.x+rndX,this.y+rndY);
+              }
               this.kill();
           }, this);
           game.add.existing(this);
@@ -29,10 +37,9 @@ var Enemy = {
           for(let i=0;i<4;i++){
                this.data.timer.push(new Phaser.Timer(game));
           }
-
+          this.data.atk = 3;
           game.add.existing(this);
           grEnemy.add(this);
-          //this.death = Ennemy.death.call(this);
      },
      octopus : function(game,x,y){
           Phaser.Sprite.call(this,game,x,y,"atlas","octopus-1");

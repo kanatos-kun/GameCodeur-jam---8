@@ -11,7 +11,7 @@ var grBullet;
 var grItem;
 var nextShot;
 var player;
-
+var gui;
 Game.Level1.prototype = {
      create : function(){
          this.stage.backgroundColor = '#466e7a';
@@ -30,24 +30,29 @@ Game.Level1.prototype = {
 
          new Enemy.crab(this.game,15,19);
 
-         var gui = this.add.bitmapText(5,0,'font','life : ' + player.health,12);
+         gui = this.add.bitmapText(5,0,'font','life : ' + player.health,12);
          gui.fixedToCamera = true;
+
+     //     this.time.events.loop(20,player.data.alphaPlayer,player,player);
+     //     this.time.events.stop();
      },
 
      update:function(){
+
           //middleground.tilePosition.y -= .2;
           this.parallaxBackground();
-
+          gui.text = 'life : ' + player.health;
          this.physics.arcade.collide(player, this.layer3);
          this.physics.arcade.collide(grEnemy, this.layer3);
          this.physics.arcade.collide(grBullet, this.layer3,this.hitWall,null,this);
          this.physics.arcade.collide(grItem, this.layer3);
-
          this.physics.arcade.overlap(grBullet,grEnemy,this.hitEnnemy,null,this);
-
+         this.physics.arcade.overlap(player,grEnemy,this.playerIsHurt,null,this);
+         this.physics.arcade.overlap(player,grItem,this.getItem,null,this);
      },
      render: function(){
           //this.debugGame();
+          //this.game.debug.text("time remained : " + player.data.timer[1].duration,0,12,"#000000");
      },
      parallaxBackground: function () {
          middleground.tilePosition.x = this.layer1.x * -0.5;
@@ -123,8 +128,25 @@ Game.Level1.prototype = {
         shot.kill();
    },
    hitEnnemy : function(shot,enemy){
-        console.log(enemy.health);
         enemy.health -= shot.data.atk;
         shot.kill();
+   },
+   playerIsHurt : function(p,enemy){
+        if(p.isInvinsible){
+             return;
+        }
+        p.damage(enemy.data.atk);
+        console.log(p.isInvinsible);
+        p.isHurt = true;
+        p.isInvinsible = true;
+        p.data.timer[0].start();
+        p.data.timer[1].start();
+        p.body.velocity.y =-150;
+        p.body.velocity.x = p.scale.x>0 ? -100:100;
+   },
+   getItem : function(p, item){
+        console.log(p.heal);
+        p.heal(item.health);
+        item.kill();
    }
 }

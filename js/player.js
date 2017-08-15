@@ -3,8 +3,11 @@ var Player = function(game,x,y){
      this.anchor.setTo(0.5,0.5);
      this.isDucking = false;
      this.isTargetCeil = false;
+     this.isHurt = false;
+     this.isInvinsible = false;
      this.maxHealth = 100;
      this.health = 100;
+     this.data.jumpTimer = 0;
      this.data.speed = Player.prototype.data.prototype.speed;
      this.animations.add('idle',Phaser.Animation.generateFrameNames('player-idle-',1,4),5,true);
      this.animations.add('jump',Phaser.Animation.generateFrameNames('player-jump-',1,6),10,true);
@@ -16,67 +19,102 @@ var Player = function(game,x,y){
      this.animations.add('run-shot', Phaser.Animation.generateFrameNames('player-run-shot-', 1, 10, '', 0), 10, true);
      this.animations.add('target-ceil',['player-shoot-up'],10,false);
      game.physics.arcade.enable(this);
-     game.add.existing(this);
      this.body.setSize(11, 40, 35, 24);
      this.body.collideWorldBounds = true;
      this.body.gravity.y = 500;
+     //this.data.timer[0].start();
+     //this.data.timer[0].add(20,this.data.alphaPlayer,this,this);
+     //this.data.timer[0].loop(20,this.data.alphaPlayer,this,this);
      // this.data = Player.prototype.data.call(this);
      this.data.commands = Player.prototype.data.commands;
      this.data.animate = Player.prototype.data.animate;
+     this.data.hurtFunction = Player.prototype.data.hurtFunction;
+     this.data.invinsibiliteFunction = Player.prototype.data.invinsibiliteFunction;
+     this.data.alphaPlayer = Player.prototype.data.alphaPlayer;
+
+
+
+
+     //data timer
+     this.data.timer=[];
+     this.data.timer[0] = game.time.create(false);
+     this.data.timer[0].loop(20,this.data.alphaPlayer,this,this);
+     this.data.timer[1] = game.time.create(false);
+     this.data.timer[1].loop(Phaser.Timer.SECOND*2,this.data.invinsibiliteFunction,this,this);
+
+     game.add.existing(this);
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.update = function(){
-     this.data.commands(this);
-     this.data.animate(this);
+     if(this.alive){
+          this.data.commands(this);
+          this.data.animate(this);
+          this.data.hurtFunction(this);
+     }
 }
 
 
 Player.prototype.data.prototype = Object.prototype;
 Player.prototype.data.prototype.constructor = Player;
 Player.prototype.data.commands = function(player){
-     player.body.velocity.x = 0;
-     if(controls.right.isDown && !player.isDucking){
-       player.scale.setTo(1,1);
-       player.body.velocity.x += player.data.speed;
-  }else if(controls.right.isDown && player.isDucking){
-       player.scale.setTo(1,1);
-  }
+     if(!player.isHurt){
 
-     if(controls.left.isDown && !player.isDucking){
-       player.scale.setTo(-1,1);
-       player.body.velocity.x -= player.data.speed;
-  }else if(controls.left.isDown && player.isDucking){
-       player.scale.setTo(-1,1);
-  }
 
-     if(controls.z.isDown && (player.body.onFloor() || player.body.touching.down) &&
-       player.game.time.now > jumpTimer){
-         player.body.velocity.y = -250;
-         jumpTimer = player.game.time.now + 750;
+
+
+           player.body.velocity.x = 0;
+
+
+
+
+           if(controls.right.isDown && !player.isDucking){
+             player.scale.setTo(1,1);
+             player.body.velocity.x += player.data.speed;
+        }else if(controls.right.isDown && player.isDucking){
+             player.scale.setTo(1,1);
+        }
+
+           if(controls.left.isDown && !player.isDucking){
+             player.scale.setTo(-1,1);
+             player.body.velocity.x -= player.data.speed;
+        }else if(controls.left.isDown && player.isDucking){
+             player.scale.setTo(-1,1);
+        }
+
+           if(controls.z.isDown && (player.body.onFloor() || player.body.touching.down) &&
+             player.game.time.now > player.data.jumpTimer){
+               player.body.velocity.y = -250;
+               player.data.jumpTimer = player.game.time.now + 750;
+           }
+
+           if(controls.shoot.isDown){
+               if(nextShot > player.game.time.now){
+                     return;
+               }
+               nextShot = player.game.time.now +200;
+               var shot = new shoot.create(player.game,player.x,player.y,player.scale.x);
+           }
+
+           if(controls.down.isDown){
+               player.isDucking = true;
+           }else{
+               player.isDucking = false;
+           }
+
+           if(controls.up.isDown){
+                player.isTargetCeil = true;
+           }else{
+                player.isTargetCeil = false;
+           }
+
+
+
+
      }
 
-     if(controls.shoot.isDown){
-         if(nextShot > player.game.time.now){
-               return;
-         }
-         nextShot = player.game.time.now +200;
-         var shot = new shoot.create(player.game,player.x,player.y,player.scale.x);
-     }
-
-     if(controls.down.isDown){
-         player.isDucking = true;
-     }else{
-         player.isDucking = false;
-     }
-
-     if(controls.up.isDown){
-          player.isTargetCeil = true;
-     }else{
-          player.isTargetCeil = false;
-     }
 }
 // Player.data.commands.prototype = Object.create(function.prototype);
 // Player.data.commands.prototype.constructor = Player.data.commands;
@@ -110,7 +148,6 @@ Player.prototype.data.animate = function(player){
      if(controls.shoot.isDown && player.body.onFloor() &&
      !player.isDucking && player.body.velocity.x == 0){
           player.animations.play('shooting');
-          console.log("shoot");
      }
 
      if(controls.shoot.isDown && player.body.onFloor() &&
@@ -124,5 +161,27 @@ Player.prototype.data.animate = function(player){
         }
 
 }
+
+Player.prototype.data.hurtFunction = function(player){
+     if(player.isHurt && player.body.onFloor() && player.body.velocity.y ==0){
+          player.isHurt = false;
+     }
+}
+
+Player.prototype.data.invinsibiliteFunction = function(player){
+     player.isInvinsible = false;
+     player.alpha = 1;
+     player.data.timer[0].stop(false);
+     player.data.timer[1].stop(false);
+}
+
+Player.prototype.data.alphaPlayer = function(player){
+     if(player.alpha){
+          player.alpha = 0;
+     }else{
+          player.alpha = 1;
+     }
+}
+
 Player.prototype.data.prototype.speed=150;
 Player.prototype.data.prototype.speed.constructor = player;
