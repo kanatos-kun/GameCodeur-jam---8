@@ -13,11 +13,12 @@ Game.Preloader = function(game){
 
           //LOAD ALL ASSETS
 
-
-          this.load.tilemap("map","assets/maps/map.json",null, Phaser.Tilemap.TILED_JSON);
+          this.load.json('json-map01-1','assets/json/json-map01-1.json');
+          // this.load.tilemap("map","assets/maps/map.json",null, Phaser.Tilemap.TILED_JSON);
+          this.load.tilemap("map_01","assets/maps/map_01.json",null, Phaser.Tilemap.TILED_JSON);
           this.load.tilemap("map_02","assets/maps/map_02.json",null, Phaser.Tilemap.TILED_JSON);
 
-          this.load.image('tileset','assets/environment/tilesets.png');
+          this.load.image('tileset','assets/environment/tileset.png');
           this.load.image('walls', 'assets/environment/walls.png');
           this.load.image('background', 'assets/environment/background.png');
           this.load.image('middleground', 'assets/environment/middleground.png');
