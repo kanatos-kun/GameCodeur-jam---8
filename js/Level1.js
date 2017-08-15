@@ -13,27 +13,26 @@ var nextShot;
 var player;
 var gui;
 var current_level;
+var portalFlag;
 var grPortals;
 var jsonLoad;
 
 Game.Level1.prototype = {
      create : function(){
          this.stage.backgroundColor = '#466e7a';
-         current_level = "map01-1";
-         jsonLoad = this.cache.getJSON('json-'+current_level);
-         console.log(jsonLoad);
+         current_level = "map01";
+         //jsonLoad = this.cache.getJSON('json-'+current_level+"-"+1);
+         jsonLoad = this.cache.getJSON('json-map01-1');
          this.createBackgrounds();
          this.createTileMap();
 
          grEnemy = this.add.group();
          grBullet = this.add.group();
          grItem = this.add.group();
-         player = new Player(this.game,0,0);
-         player.x = 53*16;
-         player.y = 5*16;
+         player = new Player(this.game,53,5);
          grPortals = this.add.group();
 
-         this.populate();
+         this.loadMap();
 
 
          this.camera.follow(player);
@@ -167,14 +166,39 @@ Game.Level1.prototype = {
         p.heal(item.health);
         item.kill();
    },
-   teleporter : function(p,portals){
-        current_level = portals.data.teleport;
-        clearMap();
+   teleporter : function(p,portal){
+        current_level = portal.data.teleport;
+        portalFlag = portal.data.flag;
+        this.clearMap();
    },
    clearMap : function(){
 
    },
    loadMap : function(){
+
+
+        if("portal" in jsonLoad){
+             for(var i=0;i<jsonLoad.portal.length;i++){
+                  let portal = jsonLoad.portal[i];
+                  new item.portal(this.game,portal.x,portal.y,new Phaser.Point(portal.scale[0],portal.scale[1]),
+                  portal.tp,portal.flag);
+             }
+        }
+
+        if("enemy" in jsonLoad){
+
+             if("crab" in jsonLoad.enemy){
+                  for(var i=0;i<jsonLoad.enemy.crab.length;i++){
+                       let crab = jsonLoad.enemy.crab[i];
+                       new Enemy.crab(this.game,crab.x,crab.y);
+                  }
+             }
+
+        }
+
+       if("player" in jsonLoad){
+            player.reset(jsonLoad.player.x*16,jsonLoad.player.y*16,player.health);
+       }
 
    }
 }

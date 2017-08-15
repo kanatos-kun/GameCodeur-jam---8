@@ -1,4 +1,6 @@
 var Player = function(game,x,y){
+     x *=16;
+     y *=16;
      Phaser.Sprite.call(this,game,x,y,'atlas','player-idle-1');
      this.anchor.setTo(0.5,0.5);
      this.isDucking = false;
