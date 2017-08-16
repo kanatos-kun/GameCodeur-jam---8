@@ -20,11 +20,12 @@ var jsonLoad;
 Game.Level1.prototype = {
      create : function(){
          this.stage.backgroundColor = '#466e7a';
-         current_level = "map01";
+         current_level = "map_01";
+         portalFlag = 1;
          //jsonLoad = this.cache.getJSON('json-'+current_level+"-"+1);
-         jsonLoad = this.cache.getJSON('json-map01-1');
+         jsonLoad = this.cache.getJSON('json-map_01-1');
          this.createBackgrounds();
-         this.createTileMap();
+         //this.createTileMap();
 
          grEnemy = this.add.group();
          grBullet = this.add.group();
@@ -34,11 +35,9 @@ Game.Level1.prototype = {
 
          this.loadMap();
 
-
          this.camera.follow(player);
 
-         gui = this.add.bitmapText(5,0,'font','energie : ' + player.health,12);
-         gui.fixedToCamera = true;
+
 
      //     this.time.events.loop(20,player.data.alphaPlayer,player,player);
      //     this.time.events.stop();
@@ -62,6 +61,14 @@ Game.Level1.prototype = {
           //this.debugGame();
           //this.game.debug.text("time remained : " + player.data.timer[1].duration,0,12,"#000000");
      },
+     debugGame: function(){
+             this.renderGroup(player);
+             //grEnemy.forEachAlive(this.renderGroup,this);
+             //grPortals.forEachAlive(this.renderGroup,this);
+        },
+     renderGroup: function (member) {
+     this.game.debug.body(member);
+     },
      parallaxBackground: function () {
          middleground.tilePosition.x = this.layer1.x * -0.5;
     },
@@ -71,16 +78,8 @@ Game.Level1.prototype = {
         background.fixedToCamera = true;
         middleground.fixedToCamera = true;
    },
-   debugGame: function(){
-        this.renderGroup(player);
-        //grEnemy.forEachAlive(this.renderGroup,this);
-        //grPortals.forEachAlive(this.renderGroup,this);
-   },
-   renderGroup: function (member) {
-    this.game.debug.body(member);
-   },
    createTileMap: function(){
-        map = this.add.tilemap("map_01",16,16);
+        map = this.add.tilemap(current_level,16,16);
         map.addTilesetImage("tileset");
         map.addTilesetImage('walls');
         this.layer1 = map.createLayer('layer 1');
@@ -92,6 +91,7 @@ Game.Level1.prototype = {
         this.layer3.resizeWorld();
        // collision
           map.setCollision(46,true,'layer 2');
+          map.removeAllLayers();
      //   map.setCollisionBetween(27, 31,true,"layer 2");
      //   map.setCollision(33,true,"layer 2");
      //   map.setCollisionBetween(182, 185,true,"layer 2");
@@ -156,27 +156,6 @@ Game.Level1.prototype = {
         p.body.velocity.x = p.scale.x>0 ? -100:100;
    },
    populate : function(){
-
-        //monster
-        new Enemy.crab(this.game,18,26);
-        new item.portal(this.game,0,24,new Phaser.Point(1,1),'level02-1');
-        new item.portal(this.game,0,12,new Phaser.Point(1,1),'level02-2');
-   },
-   getItem : function(p, item){
-        p.heal(item.health);
-        item.kill();
-   },
-   teleporter : function(p,portal){
-        current_level = portal.data.teleport;
-        portalFlag = portal.data.flag;
-        this.clearMap();
-   },
-   clearMap : function(){
-
-   },
-   loadMap : function(){
-
-
         if("portal" in jsonLoad){
              for(var i=0;i<jsonLoad.portal.length;i++){
                   let portal = jsonLoad.portal[i];
@@ -193,6 +172,18 @@ Game.Level1.prototype = {
                        new Enemy.crab(this.game,crab.x,crab.y);
                   }
              }
+             if("octopus" in jsonLoad.enemy){
+                  for(var i=0;i<jsonLoad.enemy.octopus.length;i++){
+                       let octopus = jsonLoad.enemy.octopus[i];
+                       new Enemy.octopus(this.game,octopus.x,octopus.y);
+                  }
+             }
+             if("jumper" in jsonLoad.enemy){
+                  for(var i=0;i<jsonLoad.enemy.jumper.length;i++){
+                       let jumper = jsonLoad.enemy.jumper[i];
+                       new Enemy.jumper(this.game,jumper.x,jumper.y);
+                  }
+             }
 
         }
 
@@ -200,5 +191,43 @@ Game.Level1.prototype = {
             player.reset(jsonLoad.player.x*16,jsonLoad.player.y*16,player.health);
        }
 
-   }
+       player.bringToTop();
+   },
+   getItem : function(p, item){
+        p.heal(item.health);
+        item.kill();
+   },
+   teleporter : function(p,portal){
+        current_level = portal.data.teleport;
+        portalFlag = portal.data.flag;
+        this.loadMap();
+   },
+   clearMap : function(){
+        grItem.callAll('kill');
+        grPortals.callAll('kill');
+        grEnemy.callAll('kill');
+
+        if(gui != null){
+             gui.kill();
+        }
+        if(map != null) {
+             this.layer1.kill();
+             this.layer2.kill();
+             this.layer3.kill();
+        }
+   },
+   loadMap : function(){
+        this.clearMap();
+        jsonLoad = this.cache.getJSON('json-'+current_level+"-"+portalFlag);
+        this.createTileMap();
+        grItem = this.add.group();
+        grBullet = this.add.group();
+        grEnemy = this.add.group();
+        grPortals = this.add.group();
+        this.populate();
+       gui = this.add.bitmapText(5,0,'font','energie : ' + player.health,12);
+       gui.fixedToCamera = true;
+
+}
+
 }

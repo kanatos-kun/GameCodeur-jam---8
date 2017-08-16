@@ -15,8 +15,8 @@ var item={
           this.scale = dir;
           this.data.teleport = tp;
           this.data.flag = flag;
-          this.animations.add('open',Phaser.Animation.generateFrameNames('gate-0',1,3,'',1),1,true);
-          this.animations.add('close',Phaser.Animation.generateFrameNames('gate-0',1,3,'',1).reverse(),1,false);
+          this.animations.add('open',Phaser.Animation.generateFrameNames('gate-0',1,3,'',1),5,true);
+          this.animations.add('close',Phaser.Animation.generateFrameNames('gate-0',1,3,'',1).reverse(),5,false);
           this.animations.play('close');
           game.physics.arcade.enableBody(this);
           this.body.setSize(19,48);

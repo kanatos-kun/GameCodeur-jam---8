@@ -5,7 +5,6 @@ var Enemy = {
           var anim = this.animations.add('death', Phaser.Animation.generateFrameNames('enemy-death-', 1, 5, '', 0), 18, false);
           this.animations.play('death');
           anim.onComplete.add(function () {
-               console.log(this.game);
               let rndObject = this.game.rnd.pick([1,2,3]);
 
               for(let i=0;i<rndObject;i++){
@@ -32,17 +31,16 @@ var Enemy = {
           this.animations.add('walk', Phaser.Animation.generateFrameNames('crab-walk-', 1, 4, '', 0), 10, true);
           this.animations.play('idle');
 
-          //data timer
-          this.data.timer=[];
-          for(let i=0;i<4;i++){
-               this.data.timer.push(new Phaser.Timer(game));
-          }
           this.data.atk = 3;
           game.add.existing(this);
           grEnemy.add(this);
      },
      octopus : function(game,x,y){
+          x *=16;
+          y *=16;
+          this.health = 5;
           Phaser.Sprite.call(this,game,x,y,"atlas","octopus-1");
+          this.data.atk = 3;
           game.physics.arcade.enableBody(this);
           this.anchor.setTo(0.5);
           this.body.setSize(14, 22, 8, 6);
@@ -52,9 +50,15 @@ var Enemy = {
               y: y + 50
           }, 1000, Phaser.Easing.Linear.None, true, 0, -1);
          VTween.yoyo(true)
+         game.add.existing(this);
+         grEnemy.add(this);
     },
     jumper : function(game,x,y){
+         x *=16;
+         y *=16;
+         this.health = 5;
          Phaser.Sprite.call(this,game,x,y,"atlas","jumper-idle-1");
+         this.data.atk = 3;
          this.animations.add('idle', Phaser.Animation.generateFrameNames('jumper-idle-', 1, 4, '', 0), 7, true);
          this.animations.add('jump', ['jumper-jump'], 10, true);
          this.animations.play('idle');
@@ -64,14 +68,14 @@ var Enemy = {
          this.body.gravity.y = 500;
          this.body.bounce.x = 1;
          game.time.events.loop(2000, this.jumperJump, this);
-
          this.dir = -1;
+         game.add.existing(this);
+         grEnemy.add(this);
     }
 }
 Enemy.crab.prototype = Object.create(Phaser.Sprite.prototype);
 Enemy.crab.prototype.contructor = Enemy.crab;
-// Ennemy.crab.death.prototype = Object.create(Phaser.Sprite.prototype);
-// Ennemy.crab.death.prototype.constructor = Ennemy.crab.death;
+
 Enemy.crab.prototype.update = function () {
 
     if (this.body.velocity.x < 0) {
@@ -86,7 +90,7 @@ Enemy.crab.prototype.update = function () {
         this.animations.play('idle');
     }
     if (this.health <= 0) {
-        var death = new Enemy.death(this.game, this.x, this.y);
+        new Enemy.death(this.game, this.x, this.y);
         this.destroy();
     }
 
@@ -103,8 +107,7 @@ Enemy.octopus.prototype.update = function () {
     }
 
     if (this.health <= 0) {
-        var death = new EnemyDeath(game, this.x, this.y);
-        game.add.existing(death);
+        new Enemy.death(this.game, this.x, this.y);
         this.destroy();
     }
 };
@@ -124,9 +127,7 @@ Enemy.jumper.prototype.update = function () {
     }
 
     if (this.health <= 0) {
-        var death = new EnemyDeath(game, this.x, this.y);
-        game.add.existing(death);
-
+        new Enemy.death(this.game, this.x, this.y);
         this.destroy();
 
     }

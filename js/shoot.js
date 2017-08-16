@@ -14,7 +14,7 @@ var shoot = {
           this.animations.play('shot');
           game.physics.arcade.enableBody(this);
           //this.anchor.setTo(.5);
-          if(player.isTargetCeil){
+          if(player.isTargetCeil && player.body.velocity.x ==0){
             this.body.velocity.y =-220;
           }else{
             this.body.velocity.x = 220*dir;

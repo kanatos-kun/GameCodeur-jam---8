@@ -88,6 +88,7 @@ Player.prototype.data.commands = function(player){
 
            if(controls.z.isDown && (player.body.onFloor() || player.body.touching.down) &&
              player.game.time.now > player.data.jumpTimer){
+               player.body.setSize(16,28,32,34);
                player.body.velocity.y = -250;
                player.data.jumpTimer = player.game.time.now + 750;
            }
@@ -113,7 +114,8 @@ Player.prototype.data.commands = function(player){
            }
 
 
-
+           if(player.body.onFloor() && player.body.velocity.y ==0)
+          player.body.setSize(11, 40, 35, 24);
 
      }
 
