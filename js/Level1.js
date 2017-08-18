@@ -156,6 +156,15 @@ Game.Level1.prototype = {
         p.body.velocity.x = p.scale.x>0 ? -100:100;
    },
    populate : function(){
+
+        grItem = this.add.group();
+        grBullet = this.add.group();
+        grEnemy = this.add.group();
+        if("player" in jsonLoad){
+             player.reset(jsonLoad.player.x*16,jsonLoad.player.y*16,player.health);
+        }
+        player.bringToTop();
+        grPortals = this.add.group();
         if("portal" in jsonLoad){
              for(var i=0;i<jsonLoad.portal.length;i++){
                   let portal = jsonLoad.portal[i];
@@ -187,11 +196,6 @@ Game.Level1.prototype = {
 
         }
 
-       if("player" in jsonLoad){
-            player.reset(jsonLoad.player.x*16,jsonLoad.player.y*16,player.health);
-       }
-
-       player.bringToTop();
    },
    getItem : function(p, item){
         p.heal(item.health);
@@ -220,10 +224,6 @@ Game.Level1.prototype = {
         this.clearMap();
         jsonLoad = this.cache.getJSON('json-'+current_level+"-"+portalFlag);
         this.createTileMap();
-        grItem = this.add.group();
-        grBullet = this.add.group();
-        grEnemy = this.add.group();
-        grPortals = this.add.group();
         this.populate();
        gui = this.add.bitmapText(5,0,'font','energie : ' + player.health,12);
        gui.fixedToCamera = true;

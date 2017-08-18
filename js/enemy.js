@@ -31,7 +31,7 @@ var Enemy = {
           this.animations.add('walk', Phaser.Animation.generateFrameNames('crab-walk-', 1, 4, '', 0), 10, true);
           this.animations.play('idle');
 
-          this.data.atk = 3;
+          this.data.atk = 20;
           game.add.existing(this);
           grEnemy.add(this);
      },
@@ -40,7 +40,7 @@ var Enemy = {
           y *=16;
           this.health = 5;
           Phaser.Sprite.call(this,game,x,y,"atlas","octopus-1");
-          this.data.atk = 3;
+          this.data.atk = 28;
           game.physics.arcade.enableBody(this);
           this.anchor.setTo(0.5);
           this.body.setSize(14, 22, 8, 6);
@@ -58,7 +58,7 @@ var Enemy = {
          y *=16;
          this.health = 5;
          Phaser.Sprite.call(this,game,x,y,"atlas","jumper-idle-1");
-         this.data.atk = 3;
+         this.data.atk = 24;
          this.animations.add('idle', Phaser.Animation.generateFrameNames('jumper-idle-', 1, 4, '', 0), 7, true);
          this.animations.add('jump', ['jumper-jump'], 10, true);
          this.animations.play('idle');

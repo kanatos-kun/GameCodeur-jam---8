@@ -87,11 +87,11 @@ Player.prototype.data.commands = function(player){
         }
 
            if(controls.z.isDown && (player.body.onFloor() || player.body.touching.down) &&
-             player.game.time.now > player.data.jumpTimer){
+             player.game.time.now > player.data.jumpTimer && !player.isHurt){
                player.body.setSize(16,28,32,34);
                player.body.velocity.y = -250;
                player.data.jumpTimer = player.game.time.now + 750;
-           }
+          }
 
            if(controls.shoot.isDown){
                if(nextShot > player.game.time.now){
@@ -112,7 +112,6 @@ Player.prototype.data.commands = function(player){
            }else{
                 player.isTargetCeil = false;
            }
-
 
            if(player.body.onFloor() && player.body.velocity.y ==0)
           player.body.setSize(11, 40, 35, 24);
@@ -163,6 +162,10 @@ Player.prototype.data.animate = function(player){
         player.body.velocity.x ==0){
           player.animations.play('target-ceil');
         }
+
+    if(player.isHurt){
+         player.animations.play('hurt');
+    }
 
 }
 

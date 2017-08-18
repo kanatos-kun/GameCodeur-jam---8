@@ -39,7 +39,7 @@ Game.Preloader = function(game){
           this.load.image('walls', 'assets/environment/walls.png');
           this.load.image('background', 'assets/environment/background.png');
           this.load.image('middleground', 'assets/environment/middleground.png');
-          this.load.image('title-screen','assets/sprites/title-screen.png');
+          this.load.image('title-screen','assets/sprites/title-screen2.png');
           this.load.image('press-enter-text','assets/sprites/press-enter-text.png');
           this.load.image('instructions','assets/sprites/instructions.png');
           this.load.image('credits-text','assets/sprites/credits-text.png');
